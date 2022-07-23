@@ -22,3 +22,26 @@ Route::get('/', function () {
 Route::get('/register',[AuthController::class,'loadRegister']);
 Route::post('/register',[AuthController::class,'studentRegister'])->name('studentRegister');
 
+Route::get('/login', function () {
+    return redirect('/');
+});
+
+Route::get('/',[AuthController::class,'loadlogin']);
+Route::post('/login',[AuthController::class,'userLogin'])->name('userLogin');
+
+Route::get('/logout',[AuthController::class,'logout']);
+
+
+Route::group(['middleware'=>['web','checkAdmin']],function(){
+    Route::get('/admin/dashboard',[AuthController::class,'adminDashboard']);
+});
+
+Route::group(['middleware'=>['web','checkStudent']],function(){
+    Route::get('/dashboard',[AuthController::class,'loadDashboard']);
+});
+
+
+
+
+
+
