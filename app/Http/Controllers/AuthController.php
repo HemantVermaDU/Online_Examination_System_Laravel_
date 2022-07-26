@@ -9,6 +9,12 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
+use App\Models\PasswordReset;
+use Mail;
+use Illuminate\Support\Facades\Str;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Carbon;
+
 class AuthController extends Controller
 {
     public function loadRegister()
@@ -86,5 +92,44 @@ public function logout(Request $request){
      $request->session()->flush();
      Auth::logout();
      return redirect('/');
+}
+
+public function forgetpasswordLoad()
+{
+  return view('forget-password');
+}
+
+public function forgetPassword(Request $request)
+{
+  try{
+     
+   $user = User::where('email',$request->email)->get();
+
+   if(count($user) > 0){
+
+    $token = Str::random(40);
+    $domain = URL::to('/');
+    $url= $domain.'/reset-password?token='.$token;
+
+    $data['url'] = $url;
+    $data['email']=$request->email;
+    $data['title']='password Reset';
+    $data['body']='Please click on the below link to reset your password.';
+
+    Mail::send('forgetPasswordMail',['data'=>$data],function($message) use ($data){
+      $message->to($data['email'])->subject($data['title']);
+    });
+
+
+
+
+   }
+   else{
+    return back()->with('error','Email is not exists');
+   }
+  }
+  catch(\Exception $e){
+     return back()->with('error',$e->getMessage());
+  }
 }
 }
