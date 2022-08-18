@@ -26,7 +26,7 @@
 
 </form>
 <br>
-<a href="forget-password">Forget Password</a>
+{{-- <a href="forget-password">Forget Password</a> --}}
 
 
 @endsection
