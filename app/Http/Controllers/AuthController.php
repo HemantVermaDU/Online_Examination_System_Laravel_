@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Str;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Carbon;
 
+
 class AuthController extends Controller
 {
     public function loadRegister()
@@ -58,12 +59,15 @@ class AuthController extends Controller
      return view('login');
     }
 
+  
     public function userLogin(Request $request)
     {
       $request->validate([
         'email'=>'string|required|email',
-        'password'=>'string|required'
+        'password'=>'string|required',
+        
       ]);
+
 
       $userCredential = $request->only('email','password');
       if(Auth::attempt($userCredential)){

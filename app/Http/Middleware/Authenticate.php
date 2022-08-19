@@ -18,4 +18,10 @@ class Authenticate extends Middleware
             return route('login');
         }
     }
+
+    protected function authenticated(Request $request , $user)
+    {
+          //
+    }
+
 }
