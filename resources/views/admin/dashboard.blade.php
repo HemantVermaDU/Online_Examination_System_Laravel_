@@ -4,6 +4,8 @@
 @extends('master/admin-master')
 
 @section('space-work')
+<h2>Welcome : {{ Auth::user()->name}}</h2>
+<h6>Last Login:{{ Auth::user()->last_login_at}}</h6>
 
 <h1>Subjects</h1>
 <!-- Button trigger modal -->

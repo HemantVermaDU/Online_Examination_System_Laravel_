@@ -27,7 +27,7 @@
             <a href="#"><span class="fa fa-book mr-3"></span> Subjects</a>
           </li>
           <li class="">
-            <a href="#"><span class="fa fa-book mr-3"></span> Exams</a>
+            <a href="/admin/exam"><span class="fa fa-tasks mr-3"></span> Exams</a>
           </li>
           <li>
               <a href="/logout"><span class="fa fa-sign-out mr-3"></span> Logout</a>
