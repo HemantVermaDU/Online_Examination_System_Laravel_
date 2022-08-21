@@ -16,6 +16,7 @@
     <th scope="col">Subject</th>
     <th scope="col">Date</th>
     <th scope="col">Time</th>
+    <th scope="col">Edit</th>
   </tr>
 </thead>
 <tbody>
@@ -26,7 +27,10 @@
     <td>{{ $exam->exam_name }}</td>
     <td>{{ $exam->subjects[0]['subject'] }}</td>
       <td>{{ $exam->date }}</td>
-      <td>{{ $exam->time }}</td>
+      <td>{{ $exam->time }} Hrs</td>
+      <td>
+        <button class="btn btn-info editButton" data-id="{{ $exam->id }}" data-toggle="modal" data-target="#editExamModel">Edit</button>
+      </td>
   </tr>
     
   @endforeach
@@ -57,7 +61,7 @@
             <input type="text" name="exam_name" placeholder="Enter Subject Name" class="w-100" required>
             <br>
             <label>Subject Name</label>
-            <select name="subject_id" id="" class="w-100">
+            <select name="subject_id" id="" class="w-100" required>
                 <option value="">Select Subject</option>
                 @if (count($subjects)>0)
                 @foreach ($subjects as $subject )
@@ -83,6 +87,55 @@
     </div>
   </div>
 
+
+
+<!--edit  Modal -->
+<div class="modal fade" id="editExamModel" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Edit Exam</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="editExam">
+          @csrf
+      <div class="modal-body">
+        <input type="hidden" name="exam_id" id="exam_id">
+       
+        <label>Exam Name</label>
+          <input type="text" name="exam_name" id="exam_name"  placeholder="Enter Subject Name" class="w-100" required>
+  <br>
+          <label>Subject Name</label>
+          <select name="subject_id" id="subject_id" class="w-100"  required>
+              <option value="">Select Subject</option>
+              @if (count($subjects)>0)
+              @foreach ($subjects as $subject )
+              <option value="{{ $subject->id }}">{{ $subject->subject }}</option>
+                  
+              @endforeach
+                  
+              @endif
+          </select>
+          <br>
+          <label>Date</label>
+          <input type="date" name="date" id="date" class="w-100" required min="@php echo date('Y-m-d') @endphp">
+           <br>
+           <label>Time</label>
+           <input type="time" name="time" id="time" class="w-100" required >
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" name="submit" class="btn btn-primary">Edit Exam</button>
+      </div>
+  </form>
+    </div>
+  </div>
+</div>
+
+{{-- add exam --}}
 <script>
     $(document).ready(function(){
     $("#addExam").submit(function(e){
@@ -104,7 +157,55 @@
         }
         });
     });
+
+    // edit exam
+    $(".editButton").click(function(){
+   var id = $(this).attr('data-id');
+   $("#exam_id").val(id);
+
+   var url ='{{ route("getExamDetail","id") }}';
+   url = url.replace('id',id); 
+
+   $.ajax({
+          url:url,
+          type:"GET",
+          success:function(data){
+           if(data.success == true){
+            var exam = data.data;
+            $("#exam_name").val(exam[0].exam_name);
+            $("#subject_id").val(exam[0].subject_id);
+            $("#date").val(exam[0].date);
+            $("#time").val(exam[0].time);
+           }
+           else{
+            alert(data.msg);
+           }
+          }
+   });
+
     });
+
+    $("#editExam").submit(function(e){
+        e.preventDefault();
+
+        var formData = $(this).serialize();
+
+        $.ajax({
+        url:"{{ route('updateExam') }}",
+        type:"POST",
+        data:formData,
+        success:function(data){
+            if(data.success == true){
+                location.reload();
+            }
+            else{
+                alert(data.msg);
+            }
+        }
+        });
+
+    });
+  });
 </script>
 
 
