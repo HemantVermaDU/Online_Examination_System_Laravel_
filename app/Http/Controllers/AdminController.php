@@ -76,6 +76,7 @@ class AdminController extends Controller
         'subject_id' => $request->subject_id,
         'date' => $request->date,
         'time' => $request->time,
+        'attempt' => $request->attempt,
          ]);
             return response()->json(['success'=>true,'msg'=>'Exam added Successfully']);
         }
@@ -105,6 +106,7 @@ class AdminController extends Controller
             $exam->subject_id = $request->subject_id;
             $exam->date = $request->date;
             $exam->time = $request->time;
+            $exam->attempt = $request->attempt;
             $exam->save();
                return response()->json(['success'=>true,'msg'=>'Exam updated successfully']);
            }
@@ -113,5 +115,21 @@ class AdminController extends Controller
        
            }; 
     }
+
+    //delete Exam
+    public function deleteExam(Request $request)
+    {
+    try{  
+         
+        Exam::where('id',$request->exam_id)->delete();
+
+        return response()->json(['success'=>true,'msg'=>'Exam deleted Successfully']);
+    }
+    catch(\Exception $e){
+     return response()->json(['success'=>false,'msg'=>$e->getMessage()]);
+
+    };
+    }
+
 }
 
