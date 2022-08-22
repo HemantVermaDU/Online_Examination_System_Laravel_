@@ -130,6 +130,13 @@ class AdminController extends Controller
 
     };
     }
+   
+
+    // Q & A
+    public function qnaDashboard()
+    {
+    return view('admin.qnaDashboard');
+    }
 
 }
 

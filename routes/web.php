@@ -53,6 +53,10 @@ Route::group(['middleware'=>['web','checkAdmin']],function(){
     Route::post('/delete-exam',[AdminController::class,'deleteExam'])->name('deleteExam');
 });
 
+    //Q&A Routes
+    Route::get('/admin/qna-ans',[AdminController::class,'qnaDashboard']);
+
+
 Route::group(['middleware'=>['web','checkStudent']],function(){
     Route::get('/dashboard',[AuthController::class,'loadDashboard']);
 });
