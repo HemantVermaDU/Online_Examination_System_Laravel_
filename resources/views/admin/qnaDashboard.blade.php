@@ -16,11 +16,15 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLongTitle">Add Q&A</h5>
+
+          <button id="addAnswer" class="btn btn-info ml-5">Add Answer</button>
+
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <form id="addQna">
+          @csrf
         <div class="modal-body">
             <div class="row answers">
                 <div class="col">
@@ -53,9 +57,69 @@
                 }, 2000);
             }
             else{
+              var checkIsCorrect = false;
 
+              for(let i=0; i<$(".is_correct").length; i++){
+                if($(".is_correct:eq("+i+")").prop('checked') == true)
+                {
+                  checkIsCorrect = true;
+                  $(".is_correct:eq("+i+")").val($(".is_correct:eq("+i+")").next().find('input').val());
+                }
+              }
+              if(checkIsCorrect){
+
+                var formData = $(this).serialize();
+
+                $.ajax({
+                  url:"{{ route('addQna') }}",
+                  type:"POST",
+                  data:formData,
+                  success:function(data){
+                    console.log(data);
+                    if(data.success == true){
+                      location.reload();
+                    }
+                    else{
+                      alert(data.msg);
+                    }
+                  }
+                });
+
+              }else{
+                $(".error").text("Please select anyone correct answer")
+                setTimeout(function(){
+                    $(".error").text("");
+                }, 2000);
+              }
             }
         });
+        // Add answers
+        $("#addAnswer").click(function(){
+
+         if($(".answers").length >= 6){
+                $(".error").text("You can add maximum 6 answers.")
+                setTimeout(function(){
+                    $(".error").text("");
+                }, 2000);
+            }
+            else{
+          var html =`
+          <div class="row mt-2 answers">
+            <input type="radio" name="is_correct" class="is_correct">
+                <div class="col">
+                    <input type="text" name="answers[]" placeholder="Enter Question" class="w-100" required>
+                </div>
+                <button type="button" class="btn btn-danger removeButton">Remove</button>
+            </div>
+          `;
+
+          $(".modal-body").append(html);
+         }
+        });
+
+        $(document).on("click",".removeButton",function(){
+          $(this).parent().remove();
+        })
     });
 </script>
 
