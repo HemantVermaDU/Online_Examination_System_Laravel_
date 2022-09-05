@@ -8,6 +8,9 @@ use App\Models\Exam;
 use App\Models\Answer;
 use App\Models\Question;
 
+use App\Imports\QnaImport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class AdminController extends Controller
 {
     //add subject
@@ -176,6 +179,82 @@ class AdminController extends Controller
     {
        $qna = Question::where('id',$request->qid)->with('answers')->get();
        return response()->json(['data'=>$qna]);
+    }
+
+
+    public function deleteAns(Request $request){
+        Answer::where('id',$request->id)->delete();
+        return response()->json(['success'=>true, 'msg'=>'Answer deleted successfully']);
+    }
+
+    
+    public function updateQna(Request $request){
+        try{
+            Question::where('id',$request->question_id)->update(['question' => $request->question ]);
+
+            // old answers update
+
+            if(isset($request->answers)){
+                foreach($request->answers as $key => $value){
+                    $is_correct = 0;
+                    if($request->is_correct == $value){
+                        $is_correct = 1;
+                    }
+                    Answer::where('id',$key)->update([
+                        'questions_id'=>$request->question_id,
+                        'answer'=>$value,
+                        'is_correct'=>$is_correct
+                    ]);
+                }
+            }
+
+            // New answers added
+            if(isset($request->new_answers)){
+
+                foreach($request->new_answers as $answer){
+
+                    $is_correct = 0;
+                    if($request->is_correct == $answer){
+                        $is_correct = 1;
+                    }
+
+                   Answer::insert([
+                     'questions_id'=>$request->question_id,
+                        'answer'=>$answer,
+                        'is_correct'=>$is_correct
+                   ]);
+                    
+                }
+            }
+            return response()->json(['success'=>true,'msg'=>'Q&A update successfully']);
+
+        }
+        catch(\Exception $e){
+            return response()->json(['success'=>false,'msg'=>$e->getMessage()]);
+       
+           };
+    }
+
+
+    public function deleteQna(Request $request){
+        Question::where('id',$request->id)->delete();
+        Answer::where('questions_id',$request->id)->delete();
+
+        return response()->json(['success'=>true,'msg'=>'Q&A delete successfully']);
+
+    }
+
+    // import Qna
+
+    public function importQna(Request $request){
+        try{
+            Excel::import(new QnaImport, $request->file('file'));
+
+            return response()->json(['success'=>true,'msg'=>'Import Q&A successfully']);
+
+        }catch(\Excetion $e){
+            return response()->json(['success'=>false,'msg'=>$e->getMessage()]);
+        }
     }
 }
 
